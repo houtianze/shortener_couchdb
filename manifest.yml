@@ -1,0 +1,5 @@
+---
+applications:
+ - name: shortener
+   random-route: false
+   memory: 256M
