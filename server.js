@@ -175,12 +175,11 @@ app.get("/api/redirect/:encid", function (req, res) {
       res.status(500).send(err);
       return;
     }
-    console.log(body);
     if (body.docs.length <= 0) {
       res.status(400).send("Short URL '" + encid+ "' not found");
       return;
     }
-    var loc = body.rows[0].url;
+    var loc = body.docs[0].url;
     //res.writeHead(301, { Location: loc});
     res.type('html');
     var html = '<html> <head> <meta http-equiv="refresh" content="3;url=http://www.somewhere.com/" />'
