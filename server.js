@@ -182,12 +182,27 @@ app.get("/api/redirect/:encid", function (req, res) {
     var loc = body.docs[0].url;
     //res.writeHead(301, { Location: loc});
     res.type('html');
-    var html = '<html> <head> <meta http-equiv="refresh" content="3;url=http://www.somewhere.com/" />'
-    html += "<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),";
-    html += "m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');";
-    html += "ga('create', 'UA-93994325-1', 'auto'); ga('send', 'pageview'); </script>";
-    html += '</head>';
-    html += '<body> <h1>Redirecting in 3 seconds...</h1> </body> </html>';
+    var html = `
+    <html>
+    <head>
+        <meta http-equiv="refresh" content="3;url=http://www.somewhere.com/" />
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-93994325-1', 'auto');
+  ga('send', 'pageview');
+
+    </script>
+        </head>
+    <body>
+        <h1>Redirecting in 3 seconds...</h1>
+    </body>
+    </html>
+    `;
+    res.send(html);
   });
 });
 
