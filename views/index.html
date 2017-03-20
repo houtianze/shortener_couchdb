@@ -29,11 +29,9 @@
             })
                 .done(function (data) {
                     var redirect = window.location.href.replace(/\/+$/, '') + '/api/redirect/' + data.id;
-                    var btn = $('#short-url');
-                    btn.text(redirect);
-                    btn.click( function(e) {
-                        window.open(redirect, '_bank')
-                    });
+                    var link = $('#short-url');
+                    link.text(redirect);
+                    link.attr('href', redirect);
                 })
                 .fail(function (jqXHR, textStatus, errorThrown) {
                     alert(errorThrown);
@@ -54,11 +52,15 @@
 
 <body>
     <h1 class="text-center">URL Shortener</h1>
-    <div class="form-group">
-        <input id="original-url" type="url" placeholder="Original URL" class="" />
+    <div class="input-group">
+        <input id="original-url" type="url" placeholder="Original URL" class="form-control" />
+        <span class="input-group-btn">
         <button id="shorten" class="btn btn-default">Shorten It!</button>
+        </span>
     </div>
-    <button id="short-url" class="btn">Click me later to test</button>
+    <div class="form-control text-center" style="border-style: solid; border-width: 1px; border-color: green">
+        <a id="short-url" href="javascript:void(0)">Click me later to test</a>
+    </div>
 </body>
 
 </html>

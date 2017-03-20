@@ -150,7 +150,6 @@ app.post("/api/shorten", function (req, res) {
           res.status(500).send(err);
           return;
         }
-        console.log(body);
         var id = 0;
         if (body.docs.length >=0 && ! _.isEmpty(body.docs[0])) {
           id = body.docs[0].id;
@@ -181,6 +180,7 @@ app.get("/api/redirect/:encid", function (req, res) {
     }
     var loc = body.docs[0].url;
     //res.writeHead(301, { Location: loc});
+    //res.location(loc);
     res.type('html');
     var html = `
     <html>
