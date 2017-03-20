@@ -152,8 +152,8 @@ app.post("/api/shorten", function (req, res) {
     }
     if (nextId > 0) {
       mydb.insert({ "id": nextId, "url": longUrl });
+      res.send({ "status": "inserted", "id": encode62(nextId) });
       nextId++;
-    res.send({ "status": "inserted", "id": encode62(nextId) });
     } else {
       res.status(500).send("Sorry, database not ready yet, please try again later.");
     }
