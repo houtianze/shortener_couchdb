@@ -1,3 +1,7 @@
+/*jshint node: true */
+/*jshint esversion: 6 */
+'use strict';
+
 var express = require("express");
 var app = express();
 var cfenv = require("cfenv");
@@ -5,14 +9,15 @@ var bodyParser = require('body-parser');
 var _ = require("underscore");
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 //database name
-var dbName = 'mydb';
+const dbName = 'mydb';
 var mydb;
+var nextId = -1;
 
 // utils
 
@@ -20,7 +25,7 @@ function encode62(num) {
   var table = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   var len = table.length;
   var ra = [];
-  while (num != 0) {
+  while (num !== 0) {
     ra.unshift(table[num % len]);
     num = Math.floor(num / len);
   }
@@ -33,7 +38,7 @@ function decode62(enc) {
   var len = enc.length;
   for (var i = 0; i < len; i++) {
     var c = enc.charAt(len - 1 - i);
-    var val = 0
+    var val = 0;
     if (c >= '0' && c <= '9') {
       val = c - '0';
     } else if (c >= 'a' && c <= 'z') {
@@ -143,23 +148,16 @@ app.post("/api/shorten", function (req, res) {
     if (body.docs.length > 0) {
       var id = body.docs[0].id;
       res.send({ "status": "existing", "id": encode62(id) });
-    } else {
-      getMaxId(function (err, body, header) {
-        if (err) {
-          console.log(err);
-          res.status(500).send(err);
-          return;
-        }
-        var id = 0;
-        if (body.docs.length >=0 && ! _.isEmpty(body.docs[0])) {
-          id = body.docs[0].id;
-        }
-        id++;
-        mydb.insert({ "id": id, "url": longUrl });
-        res.send({ "status": "inserted", "id": encode62(id) });
-      });
+      return;
     }
-  })
+    if (nextId > 0) {
+      mydb.insert({ "id": nextId, "url": longUrl });
+      nextId++;
+    res.send({ "status": "inserted", "id": encode62(nextId) });
+    } else {
+      res.status(500).send("Sorry, database not ready yet, please try again later.");
+    }
+  });
 });
 
 /*
@@ -185,7 +183,7 @@ app.get("/api/redirect/:encid", function (req, res) {
     var html = `
     <html>
     <head>
-        <meta http-equiv="refresh" content="3;url='`
+        <meta http-equiv="refresh" content="3;url='`;
     html += loc + '\'" />';
     html += `<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -215,7 +213,7 @@ try {
   console.log("Loaded local VCAP", vcapLocal);
 } catch (e) { }
 
-const appEnvOpts = vcapLocal ? { vcap: vcapLocal } : {}
+const appEnvOpts = vcapLocal ? { vcap: vcapLocal } : {};
 
 const appEnv = cfenv.getAppEnv(appEnvOpts);
 
@@ -236,12 +234,23 @@ if (appEnv.services['cloudantNoSQLDB']) {
   });
   // Specify the database we are going to use (mydb)...
   mydb = cloudant.db.use(dbName);
+  getMaxId(function (err, body, header) {
+    if (err) {
+      console.log(err);
+      process.exit(1);
+    }
+    var id = 0;
+    if (body.docs.length >=0 && ! _.isEmpty(body.docs[0])) {
+      id = body.docs[0].id;
+    }
+    nextId = id + 1;
+  });
 }
 
 //serve static file (index.html, images, css)
 app.use(express.static(__dirname + '/views'));
 
-var port = process.env.PORT || 3000
+var port = process.env.PORT || 3000;
 app.listen(port, function () {
   console.log("To view your app, open this link in your browser: http://localhost:" + port);
 });

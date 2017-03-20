@@ -34,7 +34,7 @@
                     link.attr('href', redirect);
                 })
                 .fail(function (jqXHR, textStatus, errorThrown) {
-                    alert(errorThrown);
+                    alert(textStatus + ": " + errorThrown + ": \n" + jqXHR.responseText);
                 });
         }
 
