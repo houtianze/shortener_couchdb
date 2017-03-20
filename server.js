@@ -183,9 +183,11 @@ app.get("/api/redirect/:encid", function (req, res) {
     var html = `
     <html>
     <head>
-        <meta http-equiv="refresh" content="3;url='`;
-    html += loc + '\'" />';
-    html += `
+    <script>
+      redtimer = window.setTimeout(function() {
+        window.location = "` + loc + `";
+      }, 3000);
+    </script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -199,6 +201,7 @@ app.get("/api/redirect/:encid", function (req, res) {
     </head>
     <body>
         <h1>Redirecting in 3 seconds...</h1>
+        <a href="javascript:clearTimeout(redtimer)">Click here if you don't wish to be redirected</a>
     </body>
     </html>
     `;
