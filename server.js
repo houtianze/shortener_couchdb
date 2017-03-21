@@ -33,6 +33,11 @@ function encode62(num) {
   return ra.join('');
 }
 
+// http://stackoverflow.com/questions/15734445/how-to-substract-2-char-in-javascript-to-get-a-difference-in-ascii
+function asciiDiff(charA, charB) {
+  return charA.charCodeAt(0) - charB.charCodeAt(0);
+}
+
 function decode62(enc) {
   var num = 0;
   var len = enc.length;
@@ -40,11 +45,11 @@ function decode62(enc) {
     var c = enc.charAt(len - 1 - i);
     var val = 0;
     if (c >= '0' && c <= '9') {
-      val = c - '0';
+      val = asciiDiff(c, '0');
     } else if (c >= 'a' && c <= 'z') {
-      val = 10 + c - 'a';
+      val = 10 + asciiDiff(c, 'a');
     } else if (c >= 'A' && c <= 'Z') {
-      val = 36 + c - 'A';
+      val = 36 + asciiDiff(c, 'A');
     } else {
       return -1;
     }
